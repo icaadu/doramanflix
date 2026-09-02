@@ -1,5 +1,55 @@
 export type DoramaItem = { title: string; tag: "DUBLADO" | "LEGENDADO"; hue: number };
 
+const make = (titles: string[], start = 0): DoramaItem[] =>
+  titles.map((title, i) => ({
+    title,
+    tag: (i + start) % 2 === 0 ? "DUBLADO" : "LEGENDADO",
+    hue: (start * 37 + i * 47) % 360,
+  }));
+
+export const TOP10 = make([
+  "O Grande e Poderoso Gênio",
+  "Coração Partido",
+  "O Herói do Apocalipse",
+  "O Doutor do Destino",
+  "Amor em Seul",
+  "Herdeira Secreta",
+  "Contrato de Casamento",
+  "Vingança de Inverno",
+  "A CEO e o Motorista",
+  "Renascida aos 18",
+]);
+
+export const LANCAMENTOS = make(
+  [
+    "Noiva do Bilionário",
+    "Guardião das Estrelas",
+    "Um Verão em Busan",
+    "Segredos do Palácio",
+    "A Filha Trocada",
+    "Meu Chefe Alfa",
+    "Estrela Cadente",
+    "Reencontro em Jeju",
+  ],
+  3,
+);
+
+export const POPULARES = make(
+  [
+    "Amor Proibido",
+    "A Rainha de Ferro",
+    "Doce Obsessão",
+    "Volte Para Mim",
+    "O Príncipe Perdido",
+    "Contrato de 100 Dias",
+    "Herança de Sangue",
+    "Café da Meia-Noite",
+  ],
+  6,
+);
+
+export const ALL_DORAMAS: DoramaItem[] = [...TOP10, ...LANCAMENTOS, ...POPULARES];
+
 export const slugify = (t: string) =>
   t
     .toLowerCase()
