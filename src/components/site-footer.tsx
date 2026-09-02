@@ -30,6 +30,6 @@ export function SiteFooter() {
   );
 }
 
-function FooterGroup({ title, links }: { title: string; links: Array<[string, string]> }) {
+function FooterGroup({ title, links }: { title: string; links: Array<[string, "/" | "/planos" | "/minha-lista"]> }) {
   return <div><p className="text-xs font-bold text-foreground">{title}</p><ul className="mt-3 space-y-2">{links.map(([label, to]) => <li key={label}><Link to={to} className="text-xs text-muted-foreground transition-colors hover:text-primary">{label}</Link></li>)}</ul></div>;
 }

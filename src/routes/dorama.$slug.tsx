@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { Heart, Menu, Play, Share2 } from "lucide-react";
+import { Heart, Play, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site-header";
 import { useFavorites } from "@/hooks/use-favorites";
@@ -53,14 +53,14 @@ function MiniPoster({ item }: { item: DoramaItem }) {
         }}
       />
       <span
-        className={`absolute right-1.5 top-1.5 rounded px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide text-white ${
-          isDub ? "bg-emerald-600" : "bg-blue-600"
+        className={`absolute right-1.5 top-1.5 rounded px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide text-tag-foreground ${
+          isDub ? "bg-success" : "bg-info"
         }`}
       >
         {item.tag}
       </span>
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-1.5 pb-1.5 pt-6">
-        <p className="line-clamp-2 text-center text-[11px] font-bold italic leading-tight text-white drop-shadow">
+        <p className="line-clamp-2 text-center text-[11px] font-bold italic leading-tight text-overlay-foreground drop-shadow">
           {item.title}
         </p>
       </div>
@@ -112,7 +112,7 @@ function DoramaPage() {
                 }}
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent px-1.5 pb-1.5 pt-6">
-                <p className="line-clamp-2 text-center text-[11px] font-bold italic leading-tight text-white">
+                <p className="line-clamp-2 text-center text-[11px] font-bold italic leading-tight text-overlay-foreground">
                   {dorama.title}
                 </p>
               </div>
@@ -126,8 +126,8 @@ function DoramaPage() {
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <span className="font-semibold text-primary">{dorama.status}</span>
           <span
-            className={`rounded px-1.5 py-0.5 text-[10px] font-extrabold tracking-wide text-white ${
-              isDub ? "bg-emerald-600" : "bg-blue-600"
+            className={`rounded px-1.5 py-0.5 text-[10px] font-extrabold tracking-wide text-tag-foreground ${
+              isDub ? "bg-success" : "bg-info"
             }`}
           >
             {dorama.tag}
