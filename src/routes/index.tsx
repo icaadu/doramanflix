@@ -171,7 +171,7 @@ function HeroCarousel() {
 
       <div className="absolute inset-x-0 bottom-10 flex flex-col items-center gap-3 px-4">
         <h1 className="text-center text-2xl font-extrabold uppercase italic leading-tight text-white drop-shadow-lg sm:text-4xl">
-          {SLIDES[index].title}
+          {SLIDES[index]?.title}
         </h1>
         <a
           href="#top10"
