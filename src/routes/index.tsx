@@ -1,5 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { DoramaCard } from "@/components/dorama-card";
+import { SiteHeader } from "@/components/site-header";
 import hero1 from "../assets/hero1.jpg.asset.json";
 import hero2 from "../assets/hero2.jpg.asset.json";
 import hero3 from "../assets/hero3.jpg.asset.json";
@@ -7,7 +10,6 @@ import {
   LANCAMENTOS,
   POPULARES,
   TOP10,
-  slugify,
   type DoramaItem as Item,
 } from "../lib/doramas";
 
@@ -48,33 +50,6 @@ const SLIDES = [
   { img: hero3.url, title: "Chuva de Neon" },
 ];
 
-function Poster({ item }: { item: Item }) {
-  const isDub = item.tag === "DUBLADO";
-  return (
-    <Link
-      to="/dorama/$slug"
-      params={{ slug: slugify(item.title) }}
-      className="group relative block overflow-hidden rounded-lg border-2 border-primary/80 shadow-[0_0_10px_oklch(0.55_0.22_25/0.35)] transition-transform duration-200 hover:-translate-y-0.5"
-    >
-      <div
-        className="aspect-[2/3] w-full"
-        style={{
-          background: `linear-gradient(160deg, oklch(0.5 0.18 ${item.hue}), oklch(0.2 0.1 ${(item.hue + 60) % 360}))`,
-        }}
-      />
-      <span
-        aria-label="Favoritar"
-        className="absolute left-1.5 top-1.5 grid size-6 place-items-center rounded-full bg-black/45 text-white transition-colors group-hover:text-primary"
-      >
-        <svg viewBox="0 0 24 24" className="size-3.5 fill-none stroke-current" strokeWidth="2.2">
-          <path d="M19 14c1.5-1.5 3-3.3 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3.4 1-4.5 2.5C10.9 4 9.3 3 7.5 3A5.5 5.5 0 0 0 2 8.5c0 2.2 1.5 4 3 5.5l7 7z" />
-        </svg>
-      </span>
-...
-    </Link>
-  );
-}
-
 function Row({ title, items }: { title: string; items: Item[] }) {
   return (
     <section className="mt-8">
@@ -83,7 +58,7 @@ function Row({ title, items }: { title: string; items: Item[] }) {
       </h2>
       <div className="grid grid-cols-3 gap-2.5 px-3 sm:grid-cols-4 sm:gap-3 sm:px-6 md:grid-cols-5 lg:grid-cols-6">
         {items.map((i) => (
-          <Poster key={i.title} item={i} />
+          <DoramaCard key={i.title} item={i} />
         ))}
       </div>
     </section>
@@ -116,7 +91,7 @@ function HeroCarousel() {
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
 
       <div className="absolute inset-x-0 bottom-10 flex flex-col items-center gap-3 px-4">
-        <h1 className="text-center text-2xl font-extrabold uppercase italic leading-tight text-white drop-shadow-lg sm:text-4xl">
+        <h1 className="text-center text-2xl font-extrabold uppercase italic leading-tight text-overlay-foreground drop-shadow-lg sm:text-4xl">
           {SLIDES[index]?.title}
         </h1>
         <a
@@ -132,12 +107,14 @@ function HeroCarousel() {
 
       <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
         {SLIDES.map((_, i) => (
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             key={i}
             aria-label={`Slide ${i + 1}`}
             onClick={() => setIndex(i)}
             className={`h-1 rounded-full transition-all ${
-              i === index ? "w-5 bg-primary" : "w-2.5 bg-white/40"
+              i === index ? "w-5 bg-primary" : "w-2.5 bg-overlay-foreground/40"
             }`}
           />
         ))}
@@ -151,17 +128,7 @@ function Index() {
 
   return (
     <div className="dark min-h-screen bg-background text-foreground">
-      {/* topo: logo + menu */}
-      <header className="absolute inset-x-0 top-0 z-20 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent px-4 py-3 sm:px-6">
-        <span className="text-lg font-extrabold tracking-tight text-primary">
-          DORAMA<span className="text-white">STREAM</span>
-        </span>
-        <button aria-label="Menu" className="grid size-9 place-items-center text-white">
-          <svg viewBox="0 0 24 24" className="size-6 fill-none stroke-current" strokeWidth="2">
-            <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" />
-          </svg>
-        </button>
-      </header>
+      <SiteHeader />
 
       <main className="pb-16">
         <HeroCarousel />
@@ -188,7 +155,9 @@ function Index() {
         {/* categorias */}
         <nav className="mt-4 flex flex-wrap justify-center gap-2 px-4 sm:px-6">
           {CATEGORIES.map((c) => (
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               key={c}
               onClick={() => setActive(c)}
               className={`shrink-0 rounded-full border px-4 py-1.5 text-xs font-semibold transition-colors ${
@@ -198,7 +167,7 @@ function Index() {
               }`}
             >
               {c}
-            </button>
+            </Button>
           ))}
         </nav>
 
@@ -223,9 +192,9 @@ function Index() {
                 placeholder="Nome do dorama ou série"
                 className="flex-1 rounded-full border border-input bg-background px-4 py-2 text-sm outline-none focus:border-ring"
               />
-              <button className="rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground">
+              <Button className="rounded-full px-5 py-2 text-sm font-bold">
                 Enviar pedido
-              </button>
+              </Button>
             </form>
           </div>
         </section>
@@ -234,14 +203,13 @@ function Index() {
       {/* navegação inferior (mobile) */}
       <nav className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-around border-t border-border bg-background/95 py-2 backdrop-blur sm:hidden">
         {[
-          { label: "Início", d: "M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z" },
-          { label: "Short Dramas", d: "M4 5h16v12H4zM8 21h8" },
-          { label: "Favoritos", d: "M19 14c1.5-1.5 3-3.3 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3.4 1-4.5 2.5C10.9 4 9.3 3 7.5 3A5.5 5.5 0 0 0 2 8.5c0 2.2 1.5 4 3 5.5l7 7z" },
-          { label: "Perfil", d: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm-7 9a7 7 0 0 1 14 0" },
+          { label: "Início", to: "/" as const, d: "M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z" },
+          { label: "Planos", to: "/planos" as const, d: "M4 5h16v12H4zM8 21h8" },
+          { label: "Minha Lista", to: "/minha-lista" as const, d: "M19 14c1.5-1.5 3-3.3 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3.4 1-4.5 2.5C10.9 4 9.3 3 7.5 3A5.5 5.5 0 0 0 2 8.5c0 2.2 1.5 4 3 5.5l7 7z" },
         ].map((i, idx) => (
-          <a
+          <Link
             key={i.label}
-            href="#"
+            to={i.to}
             className={`flex flex-col items-center gap-0.5 text-[10px] ${
               idx === 0 ? "text-primary" : "text-muted-foreground"
             }`}
@@ -250,7 +218,7 @@ function Index() {
               <path d={i.d} strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             {i.label}
-          </a>
+          </Link>
         ))}
       </nav>
 

@@ -1,5 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
+import { Heart, Play, Share2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SiteHeader } from "@/components/site-header";
+import { useFavorites } from "@/hooks/use-favorites";
 import hero1 from "../assets/hero1.jpg.asset.json";
 import hero2 from "../assets/hero2.jpg.asset.json";
 import hero3 from "../assets/hero3.jpg.asset.json";
@@ -49,14 +53,14 @@ function MiniPoster({ item }: { item: DoramaItem }) {
         }}
       />
       <span
-        className={`absolute right-1.5 top-1.5 rounded px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide text-white ${
-          isDub ? "bg-emerald-600" : "bg-blue-600"
+        className={`absolute right-1.5 top-1.5 rounded px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide text-tag-foreground ${
+          isDub ? "bg-success" : "bg-info"
         }`}
       >
         {item.tag}
       </span>
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-1.5 pb-1.5 pt-6">
-        <p className="line-clamp-2 text-center text-[11px] font-bold italic leading-tight text-white drop-shadow">
+        <p className="line-clamp-2 text-center text-[11px] font-bold italic leading-tight text-overlay-foreground drop-shadow">
           {item.title}
         </p>
       </div>
@@ -70,20 +74,12 @@ function DoramaPage() {
   const hero = HEROES[dorama.title.length % HEROES.length];
   const related = recommendations(dorama.slug, ALL_DORAMAS, 6);
   const isDub = dorama.tag === "DUBLADO";
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const favorite = isFavorite(dorama.slug);
 
   return (
     <div className="dark min-h-screen bg-background text-foreground">
-      {/* topo */}
-      <header className="absolute inset-x-0 top-0 z-20 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent px-4 py-3 sm:px-6">
-        <Link to="/" className="text-lg font-extrabold tracking-tight text-primary">
-          DORAMA<span className="text-white">STREAM</span>
-        </Link>
-        <button aria-label="Menu" className="grid size-9 place-items-center text-white">
-          <svg viewBox="0 0 24 24" className="size-6 fill-none stroke-current" strokeWidth="2">
-            <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" />
-          </svg>
-        </button>
-      </header>
+      <SiteHeader />
 
       {/* backdrop + poster */}
       <section className="relative">
@@ -116,7 +112,7 @@ function DoramaPage() {
                 }}
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent px-1.5 pb-1.5 pt-6">
-                <p className="line-clamp-2 text-center text-[11px] font-bold italic leading-tight text-white">
+                <p className="line-clamp-2 text-center text-[11px] font-bold italic leading-tight text-overlay-foreground">
                   {dorama.title}
                 </p>
               </div>
@@ -130,8 +126,8 @@ function DoramaPage() {
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <span className="font-semibold text-primary">{dorama.status}</span>
           <span
-            className={`rounded px-1.5 py-0.5 text-[10px] font-extrabold tracking-wide text-white ${
-              isDub ? "bg-emerald-600" : "bg-blue-600"
+            className={`rounded px-1.5 py-0.5 text-[10px] font-extrabold tracking-wide text-tag-foreground ${
+              isDub ? "bg-success" : "bg-info"
             }`}
           >
             {dorama.tag}
@@ -177,27 +173,15 @@ function DoramaPage() {
         </div>
 
         <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
-          <button className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90">
-            <svg viewBox="0 0 24 24" className="size-4 fill-current">
-              <path d="M8 5v14l11-7z" />
-            </svg>
+          <Button className="h-12 flex-1">
+            <Play className="fill-current" />
             Assistir Agora
-          </button>
-          <button className="flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-5 py-3 text-sm font-semibold transition-colors hover:border-primary">
-            <svg viewBox="0 0 24 24" className="size-4 fill-none stroke-current" strokeWidth="2">
-              <path d="M19 14c1.5-1.5 3-3.3 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3.4 1-4.5 2.5C10.9 4 9.3 3 7.5 3A5.5 5.5 0 0 0 2 8.5c0 2.2 1.5 4 3 5.5l7 7z" />
-            </svg>
-            Favoritar
-          </button>
-          <button className="flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-5 py-3 text-sm font-semibold transition-colors hover:border-primary">
-            <svg viewBox="0 0 24 24" className="size-4 fill-none stroke-current" strokeWidth="2">
-              <circle cx="18" cy="5" r="3" />
-              <circle cx="6" cy="12" r="3" />
-              <circle cx="18" cy="19" r="3" />
-              <path d="m8.6 10.6 6.8-4.2m-6.8 7 6.8 4.2" />
-            </svg>
-            Compartilhar
-          </button>
+          </Button>
+          <Button variant="outline" className="h-12" onClick={() => toggleFavorite(dorama.slug)}>
+            <Heart className={favorite ? "fill-primary text-primary" : ""} />
+            {favorite ? "Na minha lista" : "Favoritar"}
+          </Button>
+          <Button variant="outline" className="h-12"><Share2 /> Compartilhar</Button>
         </div>
 
         {/* sugestão */}
@@ -221,9 +205,9 @@ function DoramaPage() {
                 placeholder="Peça continuação, informe temporada faltando, ou envie sua sugestão..."
                 className="w-full resize-none rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none placeholder:text-muted-foreground focus:border-ring"
               />
-              <button className="self-start rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground">
+              <Button className="self-start rounded-full px-5 py-2 text-sm font-bold">
                 Enviar
-              </button>
+              </Button>
             </form>
           )}
         </section>
