@@ -78,7 +78,7 @@ export function getDorama(slug: string, all: DoramaItem[]) {
     episodes: seed % 2 === 0 ? "Episódio único" : `${12 + (seed % 40)} episódios`,
     origin: ["Coreia do Sul", "China", "Brasil", "Turquia"][seed % 4],
     year: 2021 + (seed % 5),
-    genres: GENRES[seed % GENRES.length],
+    genres: GENRES[seed % GENRES.length]!,
     synopsis: `${item.title} é uma história envolvente de emoções, reviravoltas e destinos cruzados. Acompanhe cada episódio ${item.tag === "DUBLADO" ? "dublado" : "legendado"} em português e mergulhe nesse universo.`,
   };
 }
