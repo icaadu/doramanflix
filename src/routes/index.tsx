@@ -1,8 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import hero1 from "../assets/hero1.jpg.asset.json";
 import hero2 from "../assets/hero2.jpg.asset.json";
 import hero3 from "../assets/hero3.jpg.asset.json";
+import {
+  LANCAMENTOS,
+  POPULARES,
+  TOP10,
+  slugify,
+  type DoramaItem as Item,
+} from "../lib/doramas";
 
 export const Route = createFileRoute("/")({
   head: () => ({
