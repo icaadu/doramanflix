@@ -1,8 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import hero1 from "../assets/hero1.jpg.asset.json";
 import hero2 from "../assets/hero2.jpg.asset.json";
 import hero3 from "../assets/hero3.jpg.asset.json";
+import {
+  LANCAMENTOS,
+  POPULARES,
+  TOP10,
+  slugify,
+  type DoramaItem as Item,
+} from "../lib/doramas";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -41,61 +48,12 @@ const SLIDES = [
   { img: hero3.url, title: "Chuva de Neon" },
 ];
 
-type Item = { title: string; tag: "DUBLADO" | "LEGENDADO"; hue: number };
-
-const make = (titles: string[], start = 0): Item[] =>
-  titles.map((title, i) => ({
-    title,
-    tag: (i + start) % 2 === 0 ? "DUBLADO" : "LEGENDADO",
-    hue: (start * 37 + i * 47) % 360,
-  }));
-
-const TOP10 = make([
-  "O Grande e Poderoso Gênio",
-  "Coração Partido",
-  "O Herói do Apocalipse",
-  "O Doutor do Destino",
-  "Amor em Seul",
-  "Herdeira Secreta",
-  "Contrato de Casamento",
-  "Vingança de Inverno",
-  "A CEO e o Motorista",
-  "Renascida aos 18",
-]);
-
-const LANCAMENTOS = make(
-  [
-    "Noiva do Bilionário",
-    "Guardião das Estrelas",
-    "Um Verão em Busan",
-    "Segredos do Palácio",
-    "A Filha Trocada",
-    "Meu Chefe Alfa",
-    "Estrela Cadente",
-    "Reencontro em Jeju",
-  ],
-  3,
-);
-
-const POPULARES = make(
-  [
-    "Amor Proibido",
-    "A Rainha de Ferro",
-    "Doce Obsessão",
-    "Volte Para Mim",
-    "O Príncipe Perdido",
-    "Contrato de 100 Dias",
-    "Herança de Sangue",
-    "Café da Meia-Noite",
-  ],
-  6,
-);
-
 function Poster({ item }: { item: Item }) {
   const isDub = item.tag === "DUBLADO";
   return (
-    <a
-      href="#"
+    <Link
+      to="/dorama/$slug"
+      params={{ slug: slugify(item.title) }}
       className="group relative block overflow-hidden rounded-lg border-2 border-primary/80 shadow-[0_0_10px_oklch(0.55_0.22_25/0.35)] transition-transform duration-200 hover:-translate-y-0.5"
     >
       <div
@@ -104,28 +62,16 @@ function Poster({ item }: { item: Item }) {
           background: `linear-gradient(160deg, oklch(0.5 0.18 ${item.hue}), oklch(0.2 0.1 ${(item.hue + 60) % 360}))`,
         }}
       />
-      <button
-        type="button"
+      <span
         aria-label="Favoritar"
-        className="absolute left-1.5 top-1.5 grid size-6 place-items-center rounded-full bg-black/45 text-white transition-colors hover:text-primary"
+        className="absolute left-1.5 top-1.5 grid size-6 place-items-center rounded-full bg-black/45 text-white transition-colors group-hover:text-primary"
       >
         <svg viewBox="0 0 24 24" className="size-3.5 fill-none stroke-current" strokeWidth="2.2">
           <path d="M19 14c1.5-1.5 3-3.3 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3.4 1-4.5 2.5C10.9 4 9.3 3 7.5 3A5.5 5.5 0 0 0 2 8.5c0 2.2 1.5 4 3 5.5l7 7z" />
         </svg>
-      </button>
-      <span
-        className={`absolute right-1.5 top-1.5 rounded px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide text-white ${
-          isDub ? "bg-emerald-600" : "bg-blue-600"
-        }`}
-      >
-        {item.tag}
       </span>
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-1.5 pb-1.5 pt-6">
-        <p className="line-clamp-2 text-center text-[11px] font-bold italic leading-tight text-white drop-shadow">
-          {item.title}
-        </p>
-      </div>
-    </a>
+...
+    </Link>
   );
 }
 
