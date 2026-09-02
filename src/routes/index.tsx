@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import hero1 from "../assets/hero1.jpg.asset.json";
+import hero2 from "../assets/hero2.jpg.asset.json";
+import hero3 from "../assets/hero3.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -30,6 +33,12 @@ const CATEGORIES = [
   "LGBTQIA+",
   "Animes",
   "Turcas",
+];
+
+const SLIDES = [
+  { img: hero1.url, title: "Amor em Seul" },
+  { img: hero2.url, title: "O Príncipe Guerreiro" },
+  { img: hero3.url, title: "Chuva de Neon" },
 ];
 
 type Item = { title: string; tag: "DUBLADO" | "LEGENDADO"; hue: number };
@@ -95,7 +104,6 @@ function Poster({ item }: { item: Item }) {
           background: `linear-gradient(160deg, oklch(0.5 0.18 ${item.hue}), oklch(0.2 0.1 ${(item.hue + 60) % 360}))`,
         }}
       />
-      {/* coração */}
       <button
         type="button"
         aria-label="Favoritar"
@@ -105,7 +113,6 @@ function Poster({ item }: { item: Item }) {
           <path d="M19 14c1.5-1.5 3-3.3 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3.4 1-4.5 2.5C10.9 4 9.3 3 7.5 3A5.5 5.5 0 0 0 2 8.5c0 2.2 1.5 4 3 5.5l7 7z" />
         </svg>
       </button>
-      {/* selo */}
       <span
         className={`absolute right-1.5 top-1.5 rounded px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide text-white ${
           isDub ? "bg-emerald-600" : "bg-blue-600"
@@ -113,7 +120,6 @@ function Poster({ item }: { item: Item }) {
       >
         {item.tag}
       </span>
-      {/* título sobre o pôster */}
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-1.5 pb-1.5 pt-6">
         <p className="line-clamp-2 text-center text-[11px] font-bold italic leading-tight text-white drop-shadow">
           {item.title}
@@ -138,72 +144,117 @@ function Row({ title, items }: { title: string; items: Item[] }) {
   );
 }
 
+function HeroCarousel() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => setIndex((i) => (i + 1) % SLIDES.length), 5000);
+    return () => clearInterval(t);
+  }, []);
+
+  return (
+    <section className="relative aspect-[4/5] w-full overflow-hidden sm:aspect-[16/9]">
+      {SLIDES.map((s, i) => (
+        <img
+          key={s.img}
+          src={s.img}
+          alt={s.title}
+          width={1024}
+          height={1280}
+          loading={i === 0 ? "eager" : "lazy"}
+          className={`absolute inset-0 h-full w-full object-cover object-top transition-opacity duration-700 ${
+            i === index ? "opacity-100" : "opacity-0"
+          }`}
+        />
+      ))}
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+
+      <div className="absolute inset-x-0 bottom-10 flex flex-col items-center gap-3 px-4">
+        <h1 className="text-center text-2xl font-extrabold uppercase italic leading-tight text-white drop-shadow-lg sm:text-4xl">
+          {SLIDES[index]?.title}
+        </h1>
+        <a
+          href="#top10"
+          className="flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-bold text-primary-foreground shadow-lg transition-opacity hover:opacity-90"
+        >
+          <svg viewBox="0 0 24 24" className="size-4 fill-current">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          Assistir Agora
+        </a>
+      </div>
+
+      <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
+        {SLIDES.map((_, i) => (
+          <button
+            key={i}
+            aria-label={`Slide ${i + 1}`}
+            onClick={() => setIndex(i)}
+            className={`h-1 rounded-full transition-all ${
+              i === index ? "w-5 bg-primary" : "w-2.5 bg-white/40"
+            }`}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function Index() {
   const [active, setActive] = useState("Todas");
 
   return (
     <div className="dark min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
-        <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <span className="text-lg font-extrabold tracking-tight text-primary">
-            DORAMA<span className="text-foreground">STREAM</span>
-          </span>
-          <input
-            type="search"
-            placeholder="Buscar dorama..."
-            className="w-40 rounded-full border border-input bg-card px-3 py-1.5 text-sm outline-none focus:border-ring sm:w-64"
-          />
+      {/* topo: logo + menu */}
+      <header className="absolute inset-x-0 top-0 z-20 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent px-4 py-3 sm:px-6">
+        <span className="text-lg font-extrabold tracking-tight text-primary">
+          DORAMA<span className="text-white">STREAM</span>
+        </span>
+        <button aria-label="Menu" className="grid size-9 place-items-center text-white">
+          <svg viewBox="0 0 24 24" className="size-6 fill-none stroke-current" strokeWidth="2">
+            <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" />
+          </svg>
+        </button>
+      </header>
+
+      <main className="pb-16">
+        <HeroCarousel />
+
+        {/* busca */}
+        <div className="px-4 pt-3 sm:px-6">
+          <label className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-3">
+            <svg
+              viewBox="0 0 24 24"
+              className="size-4 fill-none stroke-muted-foreground"
+              strokeWidth="2"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.5-3.5" strokeLinecap="round" />
+            </svg>
+            <input
+              type="search"
+              placeholder="Buscar filmes..."
+              className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+            />
+          </label>
         </div>
-        <nav className="flex gap-2 overflow-x-auto px-4 pb-3 sm:px-6">
+
+        {/* categorias */}
+        <nav className="mt-4 flex flex-wrap justify-center gap-2 px-4 sm:px-6">
           {CATEGORIES.map((c) => (
             <button
               key={c}
               onClick={() => setActive(c)}
-              className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
+              className={`shrink-0 rounded-full border px-4 py-1.5 text-xs font-semibold transition-colors ${
                 active === c
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-card text-muted-foreground hover:text-foreground"
+                  ? "border-primary bg-primary/15 text-primary"
+                  : "border-primary/50 bg-transparent text-foreground hover:border-primary"
               }`}
             >
               {c}
             </button>
           ))}
-          <span className="shrink-0 rounded-full border border-accent bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">
-            🎁 Ganhe 1 mês grátis
-          </span>
         </nav>
-      </header>
-
-      <main className="pb-16">
-        <section className="relative overflow-hidden px-4 py-10 sm:px-6">
-          <div
-            className="absolute inset-0 -z-10 opacity-60"
-            style={{
-              background:
-                "radial-gradient(circle at 20% 20%, oklch(0.45 0.2 350 / 0.5), transparent 60%), radial-gradient(circle at 80% 0%, oklch(0.4 0.18 280 / 0.5), transparent 55%)",
-            }}
-          />
-          <h1 className="max-w-xl text-3xl font-extrabold leading-tight sm:text-5xl">
-            Doramas e séries asiáticas, dublados e legendados
-          </h1>
-          <p className="mt-3 max-w-lg text-sm text-muted-foreground sm:text-base">
-            ✨ Novos doramas e séries adicionados todo dia. Assista onde quiser, quando quiser.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a
-              href="#top10"
-              className="rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90"
-            >
-              Assistir Agora
-            </a>
-            <a
-              href="#pedido"
-              className="rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-card"
-            >
-              Peça seu dorama favorito
-            </a>
-          </div>
-        </section>
 
         <div id="top10">
           <Row title="🔥 Top 10 da Semana" items={TOP10} />
@@ -234,7 +285,30 @@ function Index() {
         </section>
       </main>
 
-      <footer className="border-t border-border px-4 py-8 text-xs text-muted-foreground sm:px-6">
+      {/* navegação inferior (mobile) */}
+      <nav className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-around border-t border-border bg-background/95 py-2 backdrop-blur sm:hidden">
+        {[
+          { label: "Início", d: "M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z" },
+          { label: "Short Dramas", d: "M4 5h16v12H4zM8 21h8" },
+          { label: "Favoritos", d: "M19 14c1.5-1.5 3-3.3 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3.4 1-4.5 2.5C10.9 4 9.3 3 7.5 3A5.5 5.5 0 0 0 2 8.5c0 2.2 1.5 4 3 5.5l7 7z" },
+          { label: "Perfil", d: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm-7 9a7 7 0 0 1 14 0" },
+        ].map((i, idx) => (
+          <a
+            key={i.label}
+            href="#"
+            className={`flex flex-col items-center gap-0.5 text-[10px] ${
+              idx === 0 ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            <svg viewBox="0 0 24 24" className="size-5 fill-none stroke-current" strokeWidth="1.8">
+              <path d={i.d} strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {i.label}
+          </a>
+        ))}
+      </nav>
+
+      <footer className="border-t border-border px-4 py-8 pb-20 text-xs text-muted-foreground sm:px-6 sm:pb-8">
         © {new Date().getFullYear()} DoramaStream. Todos os direitos reservados.
       </footer>
     </div>
