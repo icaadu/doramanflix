@@ -10,11 +10,23 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MinhaListaRouteImport } from './routes/minha-lista'
+import { Route as PlanosRouteImport } from './routes/planos'
 import { Route as DoramaSlugRouteImport } from './routes/dorama.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MinhaListaRoute = MinhaListaRouteImport.update({
+  id: '/minha-lista',
+  path: '/minha-lista',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanosRoute = PlanosRouteImport.update({
+  id: '/planos',
+  path: '/planos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DoramaSlugRoute = DoramaSlugRouteImport.update({
@@ -25,27 +37,35 @@ const DoramaSlugRoute = DoramaSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/minha-lista': typeof MinhaListaRoute
+  '/planos': typeof PlanosRoute
   '/dorama/$slug': typeof DoramaSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/minha-lista': typeof MinhaListaRoute
+  '/planos': typeof PlanosRoute
   '/dorama/$slug': typeof DoramaSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/minha-lista': typeof MinhaListaRoute
+  '/planos': typeof PlanosRoute
   '/dorama/$slug': typeof DoramaSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dorama/$slug'
+  fullPaths: '/' | '/minha-lista' | '/planos' | '/dorama/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dorama/$slug'
-  id: '__root__' | '/' | '/dorama/$slug'
+  to: '/' | '/minha-lista' | '/planos' | '/dorama/$slug'
+  id: '__root__' | '/' | '/minha-lista' | '/planos' | '/dorama/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  MinhaListaRoute: typeof MinhaListaRoute
+  PlanosRoute: typeof PlanosRoute
   DoramaSlugRoute: typeof DoramaSlugRoute
 }
 
@@ -56,6 +76,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/minha-lista': {
+      id: '/minha-lista'
+      path: '/minha-lista'
+      fullPath: '/minha-lista'
+      preLoaderRoute: typeof MinhaListaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/planos': {
+      id: '/planos'
+      path: '/planos'
+      fullPath: '/planos'
+      preLoaderRoute: typeof PlanosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dorama/$slug': {
@@ -70,6 +104,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  MinhaListaRoute: MinhaListaRoute,
+  PlanosRoute: PlanosRoute,
   DoramaSlugRoute: DoramaSlugRoute,
 }
 export const routeTree = rootRouteImport
