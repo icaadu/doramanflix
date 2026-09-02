@@ -48,61 +48,12 @@ const SLIDES = [
   { img: hero3.url, title: "Chuva de Neon" },
 ];
 
-type Item = { title: string; tag: "DUBLADO" | "LEGENDADO"; hue: number };
-
-const make = (titles: string[], start = 0): Item[] =>
-  titles.map((title, i) => ({
-    title,
-    tag: (i + start) % 2 === 0 ? "DUBLADO" : "LEGENDADO",
-    hue: (start * 37 + i * 47) % 360,
-  }));
-
-const TOP10 = make([
-  "O Grande e Poderoso Gênio",
-  "Coração Partido",
-  "O Herói do Apocalipse",
-  "O Doutor do Destino",
-  "Amor em Seul",
-  "Herdeira Secreta",
-  "Contrato de Casamento",
-  "Vingança de Inverno",
-  "A CEO e o Motorista",
-  "Renascida aos 18",
-]);
-
-const LANCAMENTOS = make(
-  [
-    "Noiva do Bilionário",
-    "Guardião das Estrelas",
-    "Um Verão em Busan",
-    "Segredos do Palácio",
-    "A Filha Trocada",
-    "Meu Chefe Alfa",
-    "Estrela Cadente",
-    "Reencontro em Jeju",
-  ],
-  3,
-);
-
-const POPULARES = make(
-  [
-    "Amor Proibido",
-    "A Rainha de Ferro",
-    "Doce Obsessão",
-    "Volte Para Mim",
-    "O Príncipe Perdido",
-    "Contrato de 100 Dias",
-    "Herança de Sangue",
-    "Café da Meia-Noite",
-  ],
-  6,
-);
-
 function Poster({ item }: { item: Item }) {
   const isDub = item.tag === "DUBLADO";
   return (
-    <a
-      href="#"
+    <Link
+      to="/dorama/$slug"
+      params={{ slug: slugify(item.title) }}
       className="group relative block overflow-hidden rounded-lg border-2 border-primary/80 shadow-[0_0_10px_oklch(0.55_0.22_25/0.35)] transition-transform duration-200 hover:-translate-y-0.5"
     >
       <div
