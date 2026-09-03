@@ -5,7 +5,7 @@ import { DoramaCard } from "@/components/dorama-card";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { useFavorites } from "@/hooks/use-favorites";
-import { ALL_DORAMAS, slugify } from "@/lib/doramas";
+import { ALL_DORAMAS, itemSlug } from "@/lib/doramas";
 
 export const Route = createFileRoute("/minha-lista")({
   head: () => ({ meta: [
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/minha-lista")({
 
 function MyListPage() {
   const { favorites } = useFavorites();
-  const items = ALL_DORAMAS.filter((item) => favorites.includes(slugify(item.title)));
+  const items = ALL_DORAMAS.filter((item) => favorites.includes(itemSlug(item)));
   return <div className="dark flex min-h-screen flex-col bg-background text-foreground"><SiteHeader />
     <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-8 sm:px-6">
       <div><h1 className="flex items-center gap-2 font-serif text-3xl font-bold"><Heart className="size-7 text-primary" /> Minha Lista</h1><p className="mt-2 text-xs text-muted-foreground">Seus doramas favoritos em um só lugar</p></div>

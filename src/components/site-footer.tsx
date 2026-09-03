@@ -12,7 +12,7 @@ export function SiteFooter() {
               Seu streaming de doramas. Assista histórias marcantes dubladas e legendadas em português.
             </p>
           </div>
-          <FooterGroup title="Navegar" links={[['Catálogo', '/'], ['Planos', '/planos'], ['Minha Lista', '/minha-lista']]} />
+          <FooterGroup title="Navegar" links={[['Catálogo', '/catalogo'], ['Planos', '/planos'], ['Minha Lista', '/minha-lista']]} />
           <FooterGroup title="Categorias" links={[['Romance', '/'], ['Drama', '/'], ['Escolar', '/'], ['Histórico', '/']]} />
           <div>
             <p className="text-xs font-bold text-foreground">Suporte</p>
@@ -30,6 +30,6 @@ export function SiteFooter() {
   );
 }
 
-function FooterGroup({ title, links }: { title: string; links: Array<[string, "/" | "/planos" | "/minha-lista"]> }) {
+function FooterGroup({ title, links }: { title: string; links: Array<[string, "/" | "/catalogo" | "/planos" | "/minha-lista"]> }) {
   return <div><p className="text-xs font-bold text-foreground">{title}</p><ul className="mt-3 space-y-2">{links.map(([label, to]) => <li key={label}><Link to={to} className="text-xs text-muted-foreground transition-colors hover:text-primary">{label}</Link></li>)}</ul></div>;
 }

@@ -8,6 +8,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+# projeto usa bun (bun.lock); lockfile do npm fica só local
+package-lock.json
 dist
 dist-ssr
 .output

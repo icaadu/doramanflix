@@ -4,18 +4,20 @@ import { Heart, Play, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site-header";
 import { useFavorites } from "@/hooks/use-favorites";
-import hero1 from "../assets/hero1.jpg.asset.json";
-import hero2 from "../assets/hero2.jpg.asset.json";
-import hero3 from "../assets/hero3.jpg.asset.json";
+import { CATALOG } from "@/lib/catalog";
 import {
   ALL_DORAMAS,
   getDorama,
+  itemSlug,
   recommendations,
-  slugify,
   type DoramaItem,
 } from "../lib/doramas";
 
-const HEROES = [hero1.url, hero2.url, hero3.url];
+// Fallback de imagem para os títulos das seções fixas da home (que não têm
+// pôster próprio): usa alguns pôsteres do catálogo.
+const HEROES = CATALOG.filter((c) => c.image)
+  .slice(0, 6)
+  .map((c) => c.image);
 
 export const Route = createFileRoute("/dorama/$slug")({
   loader: ({ params }) => {
@@ -43,15 +45,19 @@ function MiniPoster({ item }: { item: DoramaItem }) {
   return (
     <Link
       to="/dorama/$slug"
-      params={{ slug: slugify(item.title) }}
+      params={{ slug: itemSlug(item) }}
       className="group relative block overflow-hidden rounded-lg border-2 border-primary/80 shadow-[0_0_10px_oklch(0.55_0.22_25/0.35)] transition-transform duration-200 hover:-translate-y-0.5"
     >
-      <div
-        className="aspect-[2/3] w-full"
-        style={{
-          background: `linear-gradient(160deg, oklch(0.5 0.18 ${item.hue}), oklch(0.2 0.1 ${(item.hue + 60) % 360}))`,
-        }}
-      />
+      {item.image ? (
+        <img src={item.image} alt="" loading="lazy" className="aspect-[2/3] w-full object-cover" />
+      ) : (
+        <div
+          className="aspect-[2/3] w-full"
+          style={{
+            background: `linear-gradient(160deg, oklch(0.5 0.18 ${item.hue ?? 0}), oklch(0.2 0.1 ${((item.hue ?? 0) + 60) % 360}))`,
+          }}
+        />
+      )}
       <span
         className={`absolute right-1.5 top-1.5 rounded px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide text-tag-foreground ${
           isDub ? "bg-success" : "bg-info"
@@ -71,7 +77,7 @@ function MiniPoster({ item }: { item: DoramaItem }) {
 function DoramaPage() {
   const dorama = Route.useLoaderData();
   const [sent, setSent] = useState(false);
-  const hero = HEROES[dorama.title.length % HEROES.length];
+  const hero = dorama.image ?? HEROES[dorama.title.length % HEROES.length];
   const related = recommendations(dorama.slug, ALL_DORAMAS, 6);
   const isDub = dorama.tag === "DUBLADO";
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -105,12 +111,20 @@ function DoramaPage() {
 
           <div className="flex gap-4">
             <div className="relative w-32 shrink-0 overflow-hidden rounded-lg border-2 border-primary/80 shadow-[0_0_16px_oklch(0.55_0.22_25/0.4)] sm:w-40">
-              <div
-                className="aspect-[2/3] w-full"
-                style={{
-                  background: `linear-gradient(160deg, oklch(0.5 0.18 ${dorama.hue}), oklch(0.2 0.1 ${(dorama.hue + 60) % 360}))`,
-                }}
-              />
+              {dorama.image ? (
+                <img
+                  src={dorama.image}
+                  alt={dorama.title}
+                  className="aspect-[2/3] w-full object-cover"
+                />
+              ) : (
+                <div
+                  className="aspect-[2/3] w-full"
+                  style={{
+                    background: `linear-gradient(160deg, oklch(0.5 0.18 ${dorama.hue ?? 0}), oklch(0.2 0.1 ${((dorama.hue ?? 0) + 60) % 360}))`,
+                  }}
+                />
+              )}
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent px-1.5 pb-1.5 pt-6">
                 <p className="line-clamp-2 text-center text-[11px] font-bold italic leading-tight text-overlay-foreground">
                   {dorama.title}
@@ -173,9 +187,11 @@ function DoramaPage() {
         </div>
 
         <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
-          <Button className="h-12 flex-1">
-            <Play className="fill-current" />
-            Assistir Agora
+          <Button asChild className="h-12 flex-1">
+            <Link to="/planos">
+              <Play className="fill-current" />
+              Assistir Agora
+            </Link>
           </Button>
           <Button variant="outline" className="h-12" onClick={() => toggleFavorite(dorama.slug)}>
             <Heart className={favorite ? "fill-primary text-primary" : ""} />
@@ -217,7 +233,7 @@ function DoramaPage() {
           <h2 className="mb-3 text-lg font-extrabold">Você também pode gostar</h2>
           <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 sm:gap-3 md:grid-cols-5 lg:grid-cols-6">
             {related.map((i) => (
-              <MiniPoster key={i.title} item={i} />
+              <MiniPoster key={itemSlug(i)} item={i} />
             ))}
           </div>
         </section>

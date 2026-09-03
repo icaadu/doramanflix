@@ -3,9 +3,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DoramaCard } from "@/components/dorama-card";
 import { SiteHeader } from "@/components/site-header";
-import hero1 from "../assets/hero1.jpg.asset.json";
-import hero2 from "../assets/hero2.jpg.asset.json";
-import hero3 from "../assets/hero3.jpg.asset.json";
+import { CATALOG } from "@/lib/catalog";
 import {
   LANCAMENTOS,
   POPULARES,
@@ -44,11 +42,29 @@ const CATEGORIES = [
   "Turcas",
 ];
 
-const SLIDES = [
-  { img: hero1.url, title: "Amor em Seul" },
-  { img: hero2.url, title: "O Príncipe Guerreiro" },
-  { img: hero3.url, title: "Chuva de Neon" },
+// Slides do banner: pôsteres reais do catálogo. A lista de preferidos é só
+// para começar por títulos reconhecíveis; se algum não existir, é ignorado e
+// o restante é completado com outros títulos do catálogo.
+const HERO_PICKS = [
+  "rainha-das-lagrimas",
+  "pousando-no-amor",
+  "vincenzo",
+  "meu-amor-das-estrelas",
+  "a-herdeira-foi-trocada-ao-nascer",
 ];
+
+const SLIDES = (() => {
+  const titled = CATALOG.filter((c) => c.title && c.image);
+  const byId = new Map(titled.map((c) => [c.id, c]));
+  const picked = HERO_PICKS.map((id) => byId.get(id)).filter(
+    (c): c is (typeof titled)[number] => Boolean(c),
+  );
+  for (const c of titled) {
+    if (picked.length >= 5) break;
+    if (!picked.includes(c)) picked.push(c);
+  }
+  return picked.map((c) => ({ img: c.image, title: c.title }));
+})();
 
 function Row({ title, items }: { title: string; items: Item[] }) {
   return (
@@ -94,15 +110,15 @@ function HeroCarousel() {
         <h1 className="text-center text-2xl font-extrabold uppercase italic leading-tight text-overlay-foreground drop-shadow-lg sm:text-4xl">
           {SLIDES[index]?.title}
         </h1>
-        <a
-          href="#top10"
+        <Link
+          to="/planos"
           className="flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-bold text-primary-foreground shadow-lg transition-opacity hover:opacity-90"
         >
           <svg viewBox="0 0 24 24" className="size-4 fill-current">
             <path d="M8 5v14l11-7z" />
           </svg>
           Assistir Agora
-        </a>
+        </Link>
       </div>
 
       <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5">

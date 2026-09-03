@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CatalogoRouteImport } from './routes/catalogo'
 import { Route as MinhaListaRouteImport } from './routes/minha-lista'
 import { Route as PlanosRouteImport } from './routes/planos'
 import { Route as DoramaSlugRouteImport } from './routes/dorama.$slug'
@@ -17,6 +18,11 @@ import { Route as DoramaSlugRouteImport } from './routes/dorama.$slug'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CatalogoRoute = CatalogoRouteImport.update({
+  id: '/catalogo',
+  path: '/catalogo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MinhaListaRoute = MinhaListaRouteImport.update({
@@ -37,12 +43,14 @@ const DoramaSlugRoute = DoramaSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/catalogo': typeof CatalogoRoute
   '/minha-lista': typeof MinhaListaRoute
   '/planos': typeof PlanosRoute
   '/dorama/$slug': typeof DoramaSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/catalogo': typeof CatalogoRoute
   '/minha-lista': typeof MinhaListaRoute
   '/planos': typeof PlanosRoute
   '/dorama/$slug': typeof DoramaSlugRoute
@@ -50,20 +58,28 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/catalogo': typeof CatalogoRoute
   '/minha-lista': typeof MinhaListaRoute
   '/planos': typeof PlanosRoute
   '/dorama/$slug': typeof DoramaSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/minha-lista' | '/planos' | '/dorama/$slug'
+  fullPaths: '/' | '/catalogo' | '/minha-lista' | '/planos' | '/dorama/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/minha-lista' | '/planos' | '/dorama/$slug'
-  id: '__root__' | '/' | '/minha-lista' | '/planos' | '/dorama/$slug'
+  to: '/' | '/catalogo' | '/minha-lista' | '/planos' | '/dorama/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/catalogo'
+    | '/minha-lista'
+    | '/planos'
+    | '/dorama/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CatalogoRoute: typeof CatalogoRoute
   MinhaListaRoute: typeof MinhaListaRoute
   PlanosRoute: typeof PlanosRoute
   DoramaSlugRoute: typeof DoramaSlugRoute
@@ -76,6 +92,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catalogo': {
+      id: '/catalogo'
+      path: '/catalogo'
+      fullPath: '/catalogo'
+      preLoaderRoute: typeof CatalogoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/minha-lista': {
@@ -104,6 +127,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CatalogoRoute: CatalogoRoute,
   MinhaListaRoute: MinhaListaRoute,
   PlanosRoute: PlanosRoute,
   DoramaSlugRoute: DoramaSlugRoute,
