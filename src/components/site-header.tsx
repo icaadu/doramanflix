@@ -1,8 +1,14 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Search, UserRound } from "lucide-react";
+import { LogIn, LogOut, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LoginDialog } from "@/components/login-dialog";
+import { useAuth } from "@/hooks/use-auth";
 
 export function SiteHeader() {
+  const { isSignedIn, email, signOut } = useAuth();
+  const [loginOpen, setLoginOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
@@ -16,18 +22,41 @@ export function SiteHeader() {
           <NavLink to="/minha-lista">Minha Lista</NavLink>
         </nav>
         <div className="flex items-center gap-2">
-          <span className="hidden rounded-full bg-destructive px-3 py-1 text-[10px] font-bold text-destructive-foreground sm:inline-flex">
-            Inativo
+          <span
+            className={`hidden rounded-full px-3 py-1 text-[10px] font-bold sm:inline-flex ${
+              isSignedIn
+                ? "bg-success text-tag-foreground"
+                : "bg-destructive text-destructive-foreground"
+            }`}
+          >
+            {isSignedIn ? "Ativo" : "Inativo"}
           </span>
-          <Button variant="ghost" size="icon" aria-label="Pesquisar">
-            <Search />
+          <Button variant="ghost" size="icon" aria-label="Pesquisar" asChild>
+            <Link to="/catalogo">
+              <Search />
+            </Link>
           </Button>
-          <Button size="sm" className="rounded-full">
-            <UserRound />
-            Sair
-          </Button>
+          {isSignedIn ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className="rounded-full"
+              title={email ?? undefined}
+              onClick={signOut}
+            >
+              <LogOut />
+              Sair
+            </Button>
+          ) : (
+            <Button size="sm" className="rounded-full" onClick={() => setLoginOpen(true)}>
+              <LogIn />
+              Entrar
+            </Button>
+          )}
         </div>
       </div>
+
+      <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} />
     </header>
   );
 }
