@@ -1,10 +1,11 @@
 // ---------------------------------------------------------------------------
 // Gerador do catálogo.
 //
-// Lê as pastas de pôsteres (organizadas por categoria), deriva um título a
-// partir do nome de cada arquivo, junta títulos repetidos em uma única entrada
-// com várias categorias, copia as imagens para `public/posters/` e escreve o
-// dataset final em `src/data/catalog.json`.
+// Lê as pastas de pôsteres (cada pasta = uma categoria), deriva um título a
+// partir do nome de cada arquivo, junta apenas arquivos de conteúdo IDÊNTICO
+// (mesmo hash) num único card, copia as imagens para `public/posters/` e
+// escreve o dataset final em `src/data/catalog.json`. Títulos parecidos NÃO
+// juntam cards — cada aba mostra só o que está na pasta correspondente.
 //
 // Uso:
 //   node scripts/build-catalog.mjs
@@ -17,6 +18,7 @@
 // e rodar o script de novo — nada no componente do catálogo precisa mudar.
 // ---------------------------------------------------------------------------
 
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -37,7 +39,6 @@ const DATA_FILE = path.join(ROOT, "src", "data", "catalog.json");
 //   popular : marca os títulos como "Populares" (curadoria, não categoria)
 const CATEGORY_FOLDERS = [
   { folder: "dorama", label: "Doramas" },
-  { folder: "doramas series", label: "Doramas/Séries" },
   { folder: "series", label: "Séries" },
   { folder: "animes", label: "Animes" },
   { folder: "Brasileira", label: "Brasileira" },
@@ -47,6 +48,9 @@ const CATEGORY_FOLDERS = [
   { folder: "+18", adult: true },
   { folder: "Populares", popular: true },
 ];
+// A aba "Doramas/Séries" não tem pasta própria: é a união de "Doramas" + "Séries"
+// (ver itemInCategory em src/lib/catalog.ts). A pasta "doramas series" da Área de
+// Trabalho é cópia de "dorama", então não é lida aqui para não duplicar.
 
 const IMAGE_EXT = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif"]);
 
@@ -158,7 +162,17 @@ function hash(str) {
   return Math.abs(h);
 }
 
+function fileHash(full) {
+  return crypto.createHash("sha1").update(fs.readFileSync(full)).digest("hex");
+}
+
 // --- coleta -----------------------------------------------------------------
+//
+// Regra de separação: cada pasta É uma categoria. Um card aparece numa
+// categoria SOMENTE se o arquivo de imagem dele está naquela pasta. Dois
+// arquivos só são tratados como o mesmo card quando têm o conteúdo idêntico
+// (mesmo hash) — títulos parecidos NÃO juntam cards. Assim "Animes", "Turcas",
+// "Brasileira" etc. mostram exatamente o que está na pasta correspondente.
 
 if (!fs.existsSync(SRC)) {
   console.error(`Origem não encontrada: ${SRC}`);
@@ -169,9 +183,8 @@ fs.rmSync(POSTERS_DIR, { recursive: true, force: true });
 fs.mkdirSync(POSTERS_DIR, { recursive: true });
 fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
 
-/** @type {Map<string, any>} */
-const bySlug = new Map();
-const usedFiles = new Set();
+/** @type {Map<string, any>} agrupa ocorrências por hash de conteúdo */
+const byContent = new Map();
 
 for (const { folder, label, adult, popular } of CATEGORY_FOLDERS) {
   const dir = path.join(SRC, folder);
@@ -186,45 +199,77 @@ for (const { folder, label, adult, popular } of CATEGORY_FOLDERS) {
     const { base, ext } = stripExt(name);
     if (!IMAGE_EXT.has(ext)) continue;
 
-    // Toda imagem vira um card. Quando o nome do arquivo não dá um título
-    // aproveitável, o card fica sem legenda (title: "") — a arte do pôster já
-    // costuma trazer o nome. `key` identifica o card: pelo título quando há um,
-    // senão pelo próprio nome do arquivo (para juntar as pastas idênticas).
-    const title = deriveTitle(base) || "";
-    const titleSlug = title ? slugify(title) : "";
-    const key = titleSlug || `img-${slugify(base) || hash(base)}`;
-
-    let entry = bySlug.get(key);
-    if (!entry) {
-      let outName = `${key}${ext}`;
-      if (usedFiles.has(outName)) outName = `${key}-${hash(base) % 1000}${ext}`;
-      usedFiles.add(outName);
-      fs.copyFileSync(full, path.join(POSTERS_DIR, outName));
-
-      entry = {
-        id: key,
-        title,
-        image: `/posters/${outName}`,
-        tag: detectTag(name) || (hash(key) % 2 === 0 ? "DUBLADO" : "LEGENDADO"),
-        languageType: "",
-        categories: [],
-        popular: false,
-        adult: false,
-      };
-      entry.languageType = entry.tag === "DUBLADO" ? "dublado" : "legendado";
-      bySlug.set(key, entry);
+    const ch = fileHash(full);
+    let group = byContent.get(ch);
+    if (!group) {
+      group = { ext, full, names: [], labels: new Set(), adult: false, popular: false };
+      byContent.set(ch, group);
     }
-
-    if (label && !entry.categories.includes(label)) entry.categories.push(label);
-    if (adult) entry.adult = true;
-    if (popular) entry.popular = true;
+    group.names.push(name);
+    if (label) group.labels.add(label);
+    if (adult) group.adult = true;
+    if (popular) group.popular = true;
     count++;
   }
   console.log(`${folder.padEnd(16)} ${String(count).padStart(4)} imagens`);
 }
 
+// --- monta os cards -------------------------------------------------------
+
+/** @type {any[]} */
+const cards = [];
+const usedIds = new Set();
+const usedFiles = new Set();
+
+for (const group of byContent.values()) {
+  // título: primeiro nome de arquivo que rende algo aproveitável
+  let title = "";
+  for (const n of group.names) {
+    const t = deriveTitle(stripExt(n).base);
+    if (t) {
+      title = t;
+      break;
+    }
+  }
+
+  let id = title ? slugify(title) : `img-${hash(group.names[0]).toString(36)}`;
+  let uid = id;
+  for (let i = 2; usedIds.has(uid); i++) uid = `${id}-${i}`;
+  id = uid;
+  usedIds.add(id);
+
+  let outName = `${id}${group.ext}`;
+  if (usedFiles.has(outName)) outName = `${id}-${hash(group.full) % 1000}${group.ext}`;
+  usedFiles.add(outName);
+  fs.copyFileSync(group.full, path.join(POSTERS_DIR, outName));
+
+  const tag =
+    detectTag(group.names.join(" ")) || (hash(id) % 2 === 0 ? "DUBLADO" : "LEGENDADO");
+
+  cards.push({
+    id,
+    title,
+    image: `/posters/${outName}`,
+    tag,
+    languageType: tag === "DUBLADO" ? "dublado" : "legendado",
+    categories: [...group.labels],
+    popular: group.popular,
+    adult: group.adult,
+  });
+}
+
+// "Doramas" é a categoria-base (pasta genérica). Se o mesmo pôster também está
+// numa pasta mais específica (Séries, Animes, Brasileira, Turcas, LGBTQIA+),
+// ele pertence só a essa — assim cada aba mostra um conjunto distinto.
+const SPECIFIC = new Set(["Séries", "Animes", "Brasileira", "Turcas", "LGBTQIA+"]);
+for (const card of cards) {
+  if (card.categories.includes("Doramas") && card.categories.some((c) => SPECIFIC.has(c))) {
+    card.categories = card.categories.filter((c) => c !== "Doramas");
+  }
+}
+
 // títulos primeiro (em ordem alfabética), depois os cards sem legenda
-const items = [...bySlug.values()].sort((a, b) => {
+const items = cards.sort((a, b) => {
   if (!a.title !== !b.title) return a.title ? -1 : 1;
   return a.title.localeCompare(b.title, "pt") || a.id.localeCompare(b.id);
 });
@@ -250,6 +295,8 @@ for (const it of items) {
 console.log("\n--- catálogo gerado ---");
 for (const [k, v] of Object.entries(counts)) console.log(`${k.padEnd(16)} ${v}`);
 const untitled = items.filter((it) => !it.title).length;
+const multi = items.filter((it) => it.categories.length > 1).length;
 console.log(`\n${items.length} cards -> ${path.relative(ROOT, DATA_FILE)}`);
 console.log(`${items.length - untitled} com legenda · ${untitled} sem legenda (só pôster)`);
+console.log(`${items.length - multi} em 1 só categoria · ${multi} em mais de uma (arquivo idêntico em 2+ pastas)`);
 console.log(`${usedFiles.size} imagens -> public/posters/`);
