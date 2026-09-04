@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "@tanstack/react-router";
-import { CheckCircle2, Mail, MessageCircle, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Mail, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,9 +10,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/use-auth";
-
-// Troque pelo número real do WhatsApp de suporte (só dígitos, com DDI/DDD).
-const WHATSAPP = "5511999990000";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -106,17 +103,6 @@ export function LoginDialog({
 
               <Button type="submit" className="w-full">
                 Entrar
-              </Button>
-
-              <Button
-                asChild
-                variant="outline"
-                className="w-full border-0 bg-success text-tag-foreground hover:bg-success/90"
-              >
-                <a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle />
-                  Suporte WhatsApp
-                </a>
               </Button>
             </form>
 

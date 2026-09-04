@@ -17,7 +17,7 @@ export function SiteFooter() {
           <div>
             <p className="text-xs font-bold text-foreground">Suporte</p>
             <ul className="mt-3 space-y-2 text-xs text-muted-foreground">
-              <li>Central de Ajuda</li><li>Termos de Uso</li><li>Privacidade</li><li>WhatsApp: +55 11 99999-0000</li>
+              <li>Central de Ajuda</li><li>Termos de Uso</li><li>Privacidade</li>
             </ul>
           </div>
         </div>
