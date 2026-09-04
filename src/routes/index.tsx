@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DoramaCard } from "@/components/dorama-card";
 import { SiteHeader } from "@/components/site-header";
-import { CATALOG } from "@/lib/catalog";
+import { CATALOG, CATALOG_CATEGORIES } from "@/lib/catalog";
 import {
   LANCAMENTOS,
   POPULARES,
@@ -31,16 +31,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
-
-const CATEGORIES = [
-  "Todas",
-  "Doramas/Séries",
-  "Brasileira",
-  "+18",
-  "LGBTQIA+",
-  "Animes",
-  "Turcas",
-];
 
 // Slides do banner: pôsteres reais do catálogo. A lista de preferidos é só
 // para começar por títulos reconhecíveis; se algum não existir, é ignorado e
@@ -140,8 +130,6 @@ function HeroCarousel() {
 }
 
 function Index() {
-  const [active, setActive] = useState("Todas");
-
   return (
     <div className="dark min-h-screen bg-background text-foreground">
       <SiteHeader />
@@ -168,22 +156,18 @@ function Index() {
           </label>
         </div>
 
-        {/* categorias */}
-        <nav className="mt-4 flex flex-wrap justify-center gap-2 px-4 sm:px-6">
-          {CATEGORIES.map((c) => (
-            <Button
-              variant="outline"
-              size="sm"
-              key={c}
-              onClick={() => setActive(c)}
-              className={`shrink-0 rounded-full border px-4 py-1.5 text-xs font-semibold transition-colors ${
-                active === c
-                  ? "border-primary bg-primary/15 text-primary"
-                  : "border-primary/50 bg-transparent text-foreground hover:border-primary"
-              }`}
+        {/* categorias — rolagem horizontal no celular (iOS/Android), quebra em
+            linhas só no desktop; cada uma abre o catálogo já filtrado */}
+        <nav className="mt-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:px-6 md:flex-wrap md:justify-center [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {CATALOG_CATEGORIES.map((c) => (
+            <Link
+              key={c.key}
+              to="/catalogo"
+              search={c.key === "tudo" ? {} : { categoria: c.key }}
+              className="shrink-0 whitespace-nowrap rounded-full border border-primary/50 bg-transparent px-4 py-1.5 text-xs font-semibold text-foreground transition-colors hover:border-primary"
             >
-              {c}
-            </Button>
+              {c.label}
+            </Link>
           ))}
         </nav>
 

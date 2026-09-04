@@ -93,10 +93,11 @@ function CatalogPage() {
           />
         </label>
 
-        {/* categorias — rolagem horizontal no mobile, quebra em linhas no desktop */}
+        {/* categorias — rolagem horizontal no celular (iOS/Android), quebra em
+            linhas no desktop */}
         <nav
           aria-label="Filtrar por categoria"
-          className="mt-4 flex gap-2 overflow-x-auto pb-1 md:flex-wrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="mt-4 flex gap-2 overflow-x-auto pb-1 md:flex-wrap [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {CATALOG_CATEGORIES.map((cat) => {
             const active = cat.key === activeKey;
