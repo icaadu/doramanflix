@@ -4,12 +4,10 @@ import { slugify } from "@/lib/doramas";
 /**
  * Um título do catálogo.
  *
- * `categories` guarda os rótulos de conteúdo (Doramas, Séries, Animes, ...).
- * Cada card fica em UMA categoria só — a da pasta onde a imagem está (o gerador
- * usa hash de conteúdo, então pôsteres iguais em pastas diferentes viram o
- * mesmo card e a pasta mais específica vence "Doramas"). "Populares" e "+18"
- * NÃO ficam aqui — vêm das flags `popular` e `adult`. "Doramas/Séries" é a
- * união de Doramas + Séries (ver itemInCategory), sem pasta própria.
+ * `categories` = as pastas em que a imagem do card está (mapeamento 1:1 pasta
+ * -> aba). O gerador junta só imagens de conteúdo idêntico, então um pôster
+ * colocado em várias pastas aparece nas abas correspondentes. "Populares" e
+ * "+18" NÃO ficam aqui — vêm das flags `popular` e `adult`.
  *
  * Para adicionar um título novo depois: coloque a imagem na pasta certa e rode
  * `node scripts/build-catalog.mjs`, ou edite `src/data/catalog.json` à mão
@@ -63,9 +61,6 @@ export function itemInCategory(item: CatalogItem, key: string): boolean {
       return item.popular === true;
     case "adulto":
       return item.adult === true;
-    case "doramas-series":
-      // aba combinada: tudo que é Dorama OU Série
-      return item.categories.includes("Doramas") || item.categories.includes("Séries");
     default: {
       const label = categoryByKey(key).label;
       return item.categories.includes(label);

@@ -37,8 +37,12 @@ const DATA_FILE = path.join(ROOT, "src", "data", "catalog.json");
 //   label   : rótulo exibido / usado nos filtros por categoria
 //   adult   : marca os títulos como conteúdo +18
 //   popular : marca os títulos como "Populares" (curadoria, não categoria)
+// Mapeamento 1:1 — cada pasta da Área de Trabalho é uma aba do site, mostrando
+// exatamente as imagens que estão nela. Um pôster que você colocou em mais de
+// uma pasta aparece em todas as abas correspondentes.
 const CATEGORY_FOLDERS = [
   { folder: "dorama", label: "Doramas" },
+  { folder: "doramas series", label: "Doramas/Séries" },
   { folder: "series", label: "Séries" },
   { folder: "animes", label: "Animes" },
   { folder: "Brasileira", label: "Brasileira" },
@@ -48,9 +52,6 @@ const CATEGORY_FOLDERS = [
   { folder: "+18", adult: true },
   { folder: "Populares", popular: true },
 ];
-// A aba "Doramas/Séries" não tem pasta própria: é a união de "Doramas" + "Séries"
-// (ver itemInCategory em src/lib/catalog.ts). A pasta "doramas series" da Área de
-// Trabalho é cópia de "dorama", então não é lida aqui para não duplicar.
 
 const IMAGE_EXT = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif"]);
 
@@ -256,16 +257,6 @@ for (const group of byContent.values()) {
     popular: group.popular,
     adult: group.adult,
   });
-}
-
-// "Doramas" é a categoria-base (pasta genérica). Se o mesmo pôster também está
-// numa pasta mais específica (Séries, Animes, Brasileira, Turcas, LGBTQIA+),
-// ele pertence só a essa — assim cada aba mostra um conjunto distinto.
-const SPECIFIC = new Set(["Séries", "Animes", "Brasileira", "Turcas", "LGBTQIA+"]);
-for (const card of cards) {
-  if (card.categories.includes("Doramas") && card.categories.some((c) => SPECIFIC.has(c))) {
-    card.categories = card.categories.filter((c) => c !== "Doramas");
-  }
 }
 
 // títulos primeiro (em ordem alfabética), depois os cards sem legenda
