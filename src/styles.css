@@ -112,19 +112,21 @@
 }
 
 .dark {
-  --background: oklch(0.095 0.006 20);
+  /* Cinza-chumbo neutro, no tom do fundo escuro da Netflix (~#141414),
+     em vez do preto quase absoluto de antes (~#040202). */
+  --background: oklch(0.17 0.003 20);
   --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.14 0.008 20);
+  --card: oklch(0.215 0.004 20);
   --card-foreground: oklch(0.984 0.003 247.858);
   --popover: oklch(0.208 0.042 265.755);
   --popover-foreground: oklch(0.984 0.003 247.858);
   --primary: oklch(0.61 0.24 20);
   --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.2 0.012 20);
+  --secondary: oklch(0.255 0.005 20);
   --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.2 0.012 20);
+  --muted: oklch(0.255 0.005 20);
   --muted-foreground: oklch(0.68 0.018 20);
-  --accent: oklch(0.22 0.02 20);
+  --accent: oklch(0.285 0.006 20);
   --accent-foreground: oklch(0.984 0.003 247.858);
   --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: oklch(0.984 0.003 247.858);
