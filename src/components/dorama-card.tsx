@@ -23,6 +23,7 @@ export function DoramaCard({ item }: { item: DoramaItem }) {
           src={item.image ?? POSTERS[item.title.length % POSTERS.length]}
           alt=""
           loading="lazy"
+          decoding="async"
           className="aspect-[2/3] w-full object-cover"
         />
         <span className={`absolute right-1.5 top-1.5 rounded px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide text-tag-foreground ${item.tag === "DUBLADO" ? "bg-success" : "bg-info"}`}>{item.tag}</span>

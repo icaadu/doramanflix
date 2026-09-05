@@ -49,7 +49,13 @@ function MiniPoster({ item }: { item: DoramaItem }) {
       className="group relative block overflow-hidden rounded-lg border-2 border-primary/80 shadow-[0_0_10px_oklch(0.55_0.22_25/0.35)] transition-transform duration-200 hover:-translate-y-0.5"
     >
       {item.image ? (
-        <img src={item.image} alt="" loading="lazy" className="aspect-[2/3] w-full object-cover" />
+        <img
+          src={item.image}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="aspect-[2/3] w-full object-cover"
+        />
       ) : (
         <div
           className="aspect-[2/3] w-full"
@@ -93,6 +99,8 @@ function DoramaPage() {
           <img
             src={hero}
             alt={dorama.title}
+            fetchPriority="high"
+            decoding="async"
             className="absolute inset-0 h-full w-full object-cover object-top"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-black/40" />
@@ -115,6 +123,7 @@ function DoramaPage() {
                 <img
                   src={dorama.image}
                   alt={dorama.title}
+                  decoding="async"
                   className="aspect-[2/3] w-full object-cover"
                 />
               ) : (

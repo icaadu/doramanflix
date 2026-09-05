@@ -86,9 +86,11 @@ function HeroCarousel() {
           key={s.img}
           src={s.img}
           alt={s.title}
-          width={1024}
-          height={1280}
+          width={480}
+          height={720}
           loading={i === 0 ? "eager" : "lazy"}
+          decoding="async"
+          fetchPriority={i === 0 ? "high" : "low"}
           className={`absolute inset-0 h-full w-full object-cover object-top transition-opacity duration-700 ${
             i === index ? "opacity-100" : "opacity-0"
           }`}

@@ -3,9 +3,10 @@
 //
 // Lê as pastas de pôsteres (cada pasta = uma categoria), deriva um título a
 // partir do nome de cada arquivo, junta apenas arquivos de conteúdo IDÊNTICO
-// (mesmo hash) num único card, copia as imagens para `public/posters/` e
-// escreve o dataset final em `src/data/catalog.json`. Títulos parecidos NÃO
-// juntam cards — cada aba mostra só o que está na pasta correspondente.
+// (mesmo hash) num único card, otimiza cada imagem (redimensiona + recodifica
+// para WebP) para `public/posters/` e escreve o dataset final em
+// `src/data/catalog.json`. Títulos parecidos NÃO juntam cards — cada aba
+// mostra só o que está na pasta correspondente.
 //
 // Uso:
 //   node scripts/build-catalog.mjs
@@ -22,6 +23,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import sharp from "sharp";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -54,6 +56,29 @@ const CATEGORY_FOLDERS = [
 ];
 
 const IMAGE_EXT = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif"]);
+
+// Os pôsteres originais vêm de coleta manual (prints, downloads, etc.) e
+// muita imagem chega a 3+ MB num tamanho bem maior do que qualquer card ou
+// banner do site mostra. Todo pôster é reprocessado para WebP, limitado a
+// esse tamanho máximo (nunca amplia imagem pequena) — isso é o que deixa o
+// catálogo carregando rápido.
+const POSTER_MAX_WIDTH = 480;
+const POSTER_MAX_HEIGHT = 720;
+const POSTER_QUALITY = 76;
+
+// Roda até `limit` chamadas de `fn` em paralelo em vez de uma de cada vez.
+async function mapWithConcurrency(items, limit, fn) {
+  const results = new Array(items.length);
+  let next = 0;
+  async function worker() {
+    while (next < items.length) {
+      const i = next++;
+      results[i] = await fn(items[i], i);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return results;
+}
 
 const ACRONYMS = { ceo: "CEO", vs: "vs", tv: "TV", dr: "Dr", mr: "Mr", ii: "II", iii: "III" };
 
@@ -215,14 +240,18 @@ for (const { folder, label, adult, popular } of CATEGORY_FOLDERS) {
   console.log(`${folder.padEnd(16)} ${String(count).padStart(4)} imagens`);
 }
 
-// --- monta os cards -------------------------------------------------------
+// --- monta os cards ---------------------------------------------------------
+//
+// Cada pôster é redimensionado e recodificado para WebP (nunca amplia imagem
+// pequena). Isso troca PNGs de 3 MB por arquivos de dezenas de KB sem trocar
+// a aparência do card — é o que deixa o carregamento rápido.
 
-/** @type {any[]} */
-const cards = [];
 const usedIds = new Set();
-const usedFiles = new Set();
+let bytesBefore = 0;
+let bytesAfter = 0;
+let optimizeFailures = 0;
 
-for (const group of byContent.values()) {
+const cards = await mapWithConcurrency([...byContent.values()], 8, async (group) => {
   // título: primeiro nome de arquivo que rende algo aproveitável
   let title = "";
   for (const n of group.names) {
@@ -239,15 +268,34 @@ for (const group of byContent.values()) {
   id = uid;
   usedIds.add(id);
 
-  let outName = `${id}${group.ext}`;
-  if (usedFiles.has(outName)) outName = `${id}-${hash(group.full) % 1000}${group.ext}`;
-  usedFiles.add(outName);
-  fs.copyFileSync(group.full, path.join(POSTERS_DIR, outName));
+  const outName = `${id}.webp`;
+  const outPath = path.join(POSTERS_DIR, outName);
+  const beforeSize = fs.statSync(group.full).size;
+  bytesBefore += beforeSize;
+
+  try {
+    await sharp(group.full)
+      .resize({
+        width: POSTER_MAX_WIDTH,
+        height: POSTER_MAX_HEIGHT,
+        fit: "inside",
+        withoutEnlargement: true,
+      })
+      .webp({ quality: POSTER_QUALITY })
+      .toFile(outPath);
+    bytesAfter += fs.statSync(outPath).size;
+  } catch {
+    // arquivo corrompido/formato inesperado: mantém o original em vez de
+    // deixar o card sem imagem
+    optimizeFailures++;
+    fs.copyFileSync(group.full, outPath);
+    bytesAfter += beforeSize;
+  }
 
   const tag =
     detectTag(group.names.join(" ")) || (hash(id) % 2 === 0 ? "DUBLADO" : "LEGENDADO");
 
-  cards.push({
+  return {
     id,
     title,
     image: `/posters/${outName}`,
@@ -256,8 +304,8 @@ for (const group of byContent.values()) {
     categories: [...group.labels],
     popular: group.popular,
     adult: group.adult,
-  });
-}
+  };
+});
 
 // títulos primeiro (em ordem alfabética), depois os cards sem legenda
 const items = cards.sort((a, b) => {
@@ -290,4 +338,8 @@ const multi = items.filter((it) => it.categories.length > 1).length;
 console.log(`\n${items.length} cards -> ${path.relative(ROOT, DATA_FILE)}`);
 console.log(`${items.length - untitled} com legenda · ${untitled} sem legenda (só pôster)`);
 console.log(`${items.length - multi} em 1 só categoria · ${multi} em mais de uma (arquivo idêntico em 2+ pastas)`);
-console.log(`${usedFiles.size} imagens -> public/posters/`);
+console.log(`${items.length} imagens -> public/posters/ (WebP, máx. ${POSTER_MAX_WIDTH}x${POSTER_MAX_HEIGHT})`);
+const mb = (n) => (n / 1024 / 1024).toFixed(1);
+const pct = bytesBefore ? Math.round(100 - (bytesAfter / bytesBefore) * 100) : 0;
+console.log(`peso: ${mb(bytesBefore)} MB -> ${mb(bytesAfter)} MB (-${pct}%)`);
+if (optimizeFailures) console.log(`${optimizeFailures} imagem(ns) não puderam ser otimizadas (copiadas sem alteração)`);
