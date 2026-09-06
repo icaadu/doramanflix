@@ -32,15 +32,16 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-// Slides do banner: pôsteres reais do catálogo. A lista de preferidos é só
-// para começar por títulos reconhecíveis; se algum não existir, é ignorado e
-// o restante é completado com outros títulos do catálogo.
+// Slides do banner: pôsteres reais do catálogo, escolhidos pela arte mais
+// chamativa (cores fortes, cena marcante). Se algum id não existir, é ignorado
+// e o restante é completado com outros títulos do catálogo.
 const HERO_PICKS = [
-  "rainha-das-lagrimas",
-  "pousando-no-amor",
+  "beijo-explosivo",
+  "a-rainha-da-mafia-se-apaixonou-por-mim",
+  "o-coracao-do-sultao",
   "vincenzo",
-  "meu-amor-das-estrelas",
-  "a-herdeira-foi-trocada-ao-nascer",
+  "tempestade-carmesim-o-vingador-solitario",
+  "hometown-cha-cha-cha",
 ];
 
 const SLIDES = (() => {
@@ -91,7 +92,7 @@ function HeroCarousel() {
           loading={i === 0 ? "eager" : "lazy"}
           decoding="async"
           fetchPriority={i === 0 ? "high" : "low"}
-          className={`absolute inset-0 h-full w-full object-cover object-top transition-opacity duration-700 ${
+          className={`absolute inset-0 h-full w-full object-cover object-[50%_35%] transition-opacity duration-700 ${
             i === index ? "opacity-100" : "opacity-0"
           }`}
         />
