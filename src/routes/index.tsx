@@ -32,16 +32,15 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-// Slides do banner: pôsteres reais do catálogo, escolhidos pela arte mais
-// chamativa (cores fortes, cena marcante). Se algum id não existir, é ignorado
-// e o restante é completado com outros títulos do catálogo.
+// Slides do banner, na ordem definida pelo dono do site. Se algum id não
+// existir no catálogo, é ignorado e o restante é completado automaticamente.
+// ("Café da Meia-Noite" não tem pôster nas pastas, por isso fora da lista.)
 const HERO_PICKS = [
-  "beijo-explosivo",
-  "a-rainha-da-mafia-se-apaixonou-por-mim",
-  "o-coracao-do-sultao",
-  "vincenzo",
-  "tempestade-carmesim-o-vingador-solitario",
-  "hometown-cha-cha-cha",
+  "a-herdeira-foi-trocada-ao-nascer",
+  "amor-e-dor-que-sentimos-na-pele",
+  "antes-que-o-amor-vire-infinito",
+  "sra-dragao",
+  "voce-pertence-a-mim",
 ];
 
 const SLIDES = (() => {
