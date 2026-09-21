@@ -28,14 +28,14 @@ export const Route = createFileRoute("/dorama/$slug")({
   head: ({ loaderData }) => ({
     meta: loaderData
       ? [
-          { title: `${loaderData.title} — DoramaStream` },
+          { title: `${loaderData.title} — DoramaFlix` },
           { name: "description", content: loaderData.synopsis },
-          { property: "og:title", content: `${loaderData.title} — DoramaStream` },
+          { property: "og:title", content: `${loaderData.title} — DoramaFlix` },
           { property: "og:description", content: loaderData.synopsis },
           { property: "og:type", content: "video.tv_show" },
           { name: "twitter:card", content: "summary_large_image" },
         ]
-      : [{ title: "Dorama — DoramaStream" }, { name: "robots", content: "noindex" }],
+      : [{ title: "Dorama — DoramaFlix" }, { name: "robots", content: "noindex" }],
   }),
   component: DoramaPage,
 });
@@ -249,7 +249,7 @@ function DoramaPage() {
       </main>
 
       <footer className="mt-14 border-t border-border px-4 py-8 text-xs text-muted-foreground sm:px-6">
-        © {new Date().getFullYear()} DoramaStream. Todos os direitos reservados.
+        © {new Date().getFullYear()} DoramaFlix. Todos os direitos reservados.
       </footer>
     </div>
   );

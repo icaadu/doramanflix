@@ -9,9 +9,9 @@ import { ALL_DORAMAS, itemSlug } from "@/lib/doramas";
 
 export const Route = createFileRoute("/minha-lista")({
   head: () => ({ meta: [
-    { title: "Minha Lista — DoramaStream" },
+    { title: "Minha Lista — DoramaFlix" },
     { name: "description", content: "Seus doramas favoritos reunidos em um só lugar." },
-    { property: "og:title", content: "Minha Lista — DoramaStream" },
+    { property: "og:title", content: "Minha Lista — DoramaFlix" },
     { property: "og:description", content: "Acesse sua lista pessoal de doramas favoritos." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },

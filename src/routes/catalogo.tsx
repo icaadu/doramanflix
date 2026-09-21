@@ -24,13 +24,13 @@ export const Route = createFileRoute("/catalogo")({
   }),
   head: () => ({
     meta: [
-      { title: "Catálogo — DoramaStream" },
+      { title: "Catálogo — DoramaFlix" },
       {
         name: "description",
         content:
           "Explore o catálogo completo de doramas, séries, animes e produções turcas e brasileiras, dublados e legendados.",
       },
-      { property: "og:title", content: "Catálogo — DoramaStream" },
+      { property: "og:title", content: "Catálogo — DoramaFlix" },
       { property: "og:description", content: "Nossa coleção completa de doramas e séries." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

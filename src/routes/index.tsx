@@ -14,13 +14,13 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "DoramaStream — Doramas e Séries Asiáticas Online" },
+      { title: "DoramaFlix — Doramas e Séries Asiáticas Online" },
       {
         name: "description",
         content:
           "Assista doramas, séries asiáticas e turcas dubladas e legendadas. Novos títulos adicionados todos os dias.",
       },
-      { property: "og:title", content: "DoramaStream — Doramas e Séries Asiáticas Online" },
+      { property: "og:title", content: "DoramaFlix — Doramas e Séries Asiáticas Online" },
       {
         property: "og:description",
         content: "Catálogo de doramas dublados e legendados, atualizado diariamente.",
@@ -225,7 +225,7 @@ function Index() {
       </nav>
 
       <footer className="border-t border-border px-4 py-8 pb-20 text-xs text-muted-foreground sm:px-6 sm:pb-8">
-        © {new Date().getFullYear()} DoramaStream. Todos os direitos reservados.
+        © {new Date().getFullYear()} DoramaFlix. Todos os direitos reservados.
       </footer>
     </div>
   );

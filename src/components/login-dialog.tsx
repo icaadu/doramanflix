@@ -52,7 +52,7 @@ export function LoginDialog({
     >
       <DialogContent className="max-w-sm border-border bg-card">
         <p className="text-center font-serif text-lg font-bold tracking-wide text-primary">
-          DORAMASTREAM
+          DORAMAFLIX
         </p>
 
         {confirmedEmail ? (

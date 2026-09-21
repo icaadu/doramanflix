@@ -7,7 +7,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-5 py-10 sm:px-6">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <p className="font-serif text-lg font-bold text-primary">DORAMASTREAM</p>
+            <p className="font-serif text-lg font-bold text-primary">DORAMAFLIX</p>
             <p className="mt-3 max-w-xs text-xs leading-6 text-muted-foreground">
               Seu streaming de doramas. Assista histórias marcantes dubladas e legendadas em português.
             </p>

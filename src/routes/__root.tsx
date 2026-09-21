@@ -77,10 +77,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "DoramaStream" },
+      { title: "DoramaFlix" },
       { name: "description", content: "Doramas dublados e legendados em português." },
-      { name: "author", content: "DoramaStream" },
-      { property: "og:title", content: "DoramaStream" },
+      { name: "author", content: "DoramaFlix" },
+      { property: "og:title", content: "DoramaFlix" },
       { property: "og:description", content: "Doramas dublados e legendados em português." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

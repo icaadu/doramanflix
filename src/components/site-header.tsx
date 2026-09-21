@@ -13,7 +13,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link to="/" className="font-serif text-lg font-bold text-primary sm:text-xl">
-          DORAMASTREAM
+          DORAMAFLIX
         </Link>
         <nav className="hidden h-full items-center gap-7 md:flex" aria-label="Navegação principal">
           <NavLink to="/">Início</NavLink>

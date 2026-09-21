@@ -6,9 +6,9 @@ import { SiteHeader } from "@/components/site-header";
 
 export const Route = createFileRoute("/planos")({
   head: () => ({ meta: [
-    { title: "Planos de Assinatura — DoramaStream" },
-    { name: "description", content: "Escolha seu plano DoramaStream e assista doramas sem limites." },
-    { property: "og:title", content: "Planos de Assinatura — DoramaStream" },
+    { title: "Planos de Assinatura — DoramaFlix" },
+    { name: "description", content: "Escolha seu plano DoramaFlix e assista doramas sem limites." },
+    { property: "og:title", content: "Planos de Assinatura — DoramaFlix" },
     { property: "og:description", content: "Planos semanais, mensais, semestrais e vitalício para assistir sem limites." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },
