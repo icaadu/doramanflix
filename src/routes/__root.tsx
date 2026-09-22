@@ -107,13 +107,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
 
         {/* Utmify - UTM tracking (must load early to capture click/UTM params) */}
-        <script
-          src="https://cdn.utmify.com.br/scripts/utms/latest.js"
-          data-utmify-prevent-xcod-sck=""
-          data-utmify-prevent-subids=""
-          async
-          defer
-        />
+        <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" async defer />
 
         {/* Meta Pixel Code */}
         <script
