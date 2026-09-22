@@ -7,9 +7,18 @@ export const META_PIXEL_ID = "1604394004422757";
 export function TrackingScripts() {
   return (
     <>
-      {/* Utmify - captures UTM/click params and appends them to outbound
-          checkout links. Must load as early as possible in <head>. */}
-      <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" async defer />
+      {/* Utmify - captures UTM/click params (sck/xcod/subids) and appends them
+          to outbound checkout links. The two data- flags preserve those
+          params instead of letting the script drop/rewrite them, which the
+          Lowify checkout needs to correlate a click back to a sale. Must
+          load as early as possible in <head>. */}
+      <script
+        src="https://cdn.utmify.com.br/scripts/utms/latest.js"
+        data-utmify-prevent-xcod-sck=""
+        data-utmify-prevent-subids=""
+        async
+        defer
+      />
 
       {/* Meta Pixel base code */}
       <script
