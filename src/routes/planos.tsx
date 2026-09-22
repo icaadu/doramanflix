@@ -3,6 +3,7 @@ import { ArrowLeft, Check, Crown, QrCode, ShieldCheck, Sparkles, Zap } from "luc
 import { Button } from "@/components/ui/button";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { trackPlanCheckout } from "@/lib/analytics";
 
 export const Route = createFileRoute("/planos")({
   head: () => ({ meta: [
@@ -22,6 +23,7 @@ const plans = [
     name: "Semanal — 7 dias",
     cycle: "/semanal",
     price: "R$ 5,00",
+    priceValue: 5.0,
     daily: "Apenas R$ 0,71 por dia",
     icon: Zap,
     benefits: ["Ideal para testar o app", "1 tela simultânea", "Acesso ilimitado", "Qualidade HD", "Sem anúncios"],
@@ -31,6 +33,7 @@ const plans = [
     name: "Mensal",
     cycle: "/mês",
     price: "R$ 10,00",
+    priceValue: 10.0,
     daily: "Apenas R$ 0,33 por dia",
     icon: Sparkles,
     popular: "MAIS POPULAR",
@@ -41,6 +44,7 @@ const plans = [
     name: "Semestral — 6 meses",
     cycle: "/semestral",
     price: "R$ 37,90",
+    priceValue: 37.9,
     daily: "Apenas R$ 0,21 por dia",
     icon: Zap,
     benefits: ["Acesso ilimitado por 6 meses", "10 telas simultâneas", "Qualidade HD", "Sem anúncios", "Suporte", "Disponível para TV"],
@@ -50,6 +54,7 @@ const plans = [
     name: "Acesso Vitalício",
     cycle: "Pague apenas uma vez!",
     price: "R$ 69,90",
+    priceValue: 69.9,
     daily: "Sem mensalidade · Sem renovação automática",
     icon: Crown,
     popular: "MELHOR OFERTA",
@@ -70,7 +75,11 @@ function PlansPage() {
         <ul className="grid grid-cols-2 gap-x-3 gap-y-2">{plan.benefits.map((benefit) => <li key={benefit} className="flex items-start gap-1 text-[9px]"><Check className={`mt-0.5 size-3 shrink-0 ${plan.premium ? "text-premium" : "text-success"}`} />{benefit}</li>)}</ul>
         <div className="mt-4">
           <Button asChild className={`w-full ${plan.premium ? "bg-premium text-premium-foreground hover:bg-premium/90" : "bg-success text-tag-foreground hover:bg-success/90"}`}>
-            <a href={plan.checkoutPix} rel="noopener"><QrCode /> Pagar com PIX</a>
+            <a
+              href={plan.checkoutPix}
+              rel="noopener"
+              onClick={() => trackPlanCheckout({ planName: plan.name, value: plan.priceValue })}
+            ><QrCode /> Pagar com PIX</a>
           </Button>
         </div>
       </article>})}</div>
